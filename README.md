@@ -5,7 +5,7 @@
   <p><i>Dynamic Colors • Qt6 Native • Custom Typography • Beautiful Animations</i></p>
 
   <p>
-    <a href="https://github.com/blumenwagen/sddm-material/blob/main/metadata.desktop"><img src="https://img.shields.io/github/license/blumenwagen/sddm-material?color=blue&style=for-the-badge" alt="License"></a>
+    <a href="https://github.com/blumenwagen/sddm-material/blob/main/LICENSE"><img src="https://img.shields.io/github/license/blumenwagen/sddm-material?style=for-the-badge&color=blue" alt="License"></a>
     <img src="https://img.shields.io/badge/Qt-6.0%2B-41CD52.svg?style=for-the-badge&logo=qt" alt="Qt6">
     <img src="https://img.shields.io/badge/Material%20Design%203-Expressive-72BFA2.svg?style=for-the-badge" alt="Material Design 3">
   </p>
