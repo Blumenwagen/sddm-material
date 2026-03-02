@@ -1,72 +1,82 @@
-<h1 align="center">
-  SDDM Material 3 Theme
-</h1>
+<div align="center">
+  
+  <h1>✨ SDDM Material 3</h1>
+  <p><b>A playful, vibrant Material 3 expressive inspired SDDM theme</b></p>
+  <p><i>Dynamic Colors • Qt6 Native • Custom Typography • Beautiful Animations</i></p>
+
+  <p>
+    <a href="https://github.com/blumenwagen/sddm-material/blob/main/metadata.desktop"><img src="https://img.shields.io/github/license/blumenwagen/sddm-material?color=blue&style=for-the-badge" alt="License"></a>
+    <img src="https://img.shields.io/badge/Qt-6.0%2B-41CD52.svg?style=for-the-badge&logo=qt" alt="Qt6">
+    <img src="https://img.shields.io/badge/Material%20Design%203-Expressive-72BFA2.svg?style=for-the-badge" alt="Material Design 3">
+  </p>
+</div>
+
+<br>
 
 <p align="center">
-  A playful, vibrant Material 3 expressive inspired SDDM theme built with Qt6.
+  <img src="swappy-20260302_220743.png" alt="SDDM Material Theme Preview" width="100%" onerror="this.style.display='none';"> 
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Material%20Design%203-Expressive-72BFA2.svg?style=flat-square" alt="Material Design 3">
-  <img src="https://img.shields.io/badge/Qt-6.0%2B-41CD52.svg?style=flat-square" alt="Qt6">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License">
-</p>
 
----
+## 🚀 Quick Start
 
-![Material SDDM Preview Image](swappy-20260302_220743.png)
-
-## ✨ Features
-
-*   **Dynamic Colors**: Automatically extracts dominant colors from your chosen wallpaper and generates a Material You-like palette for accents and surfaces!
-*   **Looks good**: Features large, rounded corners, playful animations, and bold styling.
-
-## 📦 Requirements
-
-Before installing, ensure you have the following packages installed:
-
-*   `sddm` (obviously!)
-*   `qt6-declarative` / `qml6-module-qtquick` (depending on your distro's naming)
-*   `python3`
-*   `python3-pillow` (or `python-pillow`) – used for lightning-fast color extraction.
-
-## 🚀 Installation
+### Installation Script:
 
 ```bash
-#Clone the repository and cd into it
 git clone https://github.com/blumenwagen/sddm-material.git
-
 cd sddm-material
-
-#Install the theme (if you run without arguments, it will ask you for a wallpaper and profile picture)
 sudo ./install.sh
 ```
 
+Requires **SDDM**, **Qt6**, and **python3** with **pillow** (for color extraction). 
+If you run without arguments, the script will automatically ask you for a **wallpaper** and an optional **profile picture**.
+
+> [!NOTE]
+> You can also run the installer non-interactively by passing the image paths directly: 
+> `sudo ./install.sh /path/to/my_wallpaper.jpg /path/to/my_pfp.png`
+
+<br>
+
+## 🧩 Features
+
+| Feature | Description |
+|---------|-------------|
+| 🎨 **Dynamic Colors** | Automatically extracts dominant colors from your chosen wallpaper and generates a Material You-like palette |
+| ✨ **Looks Good** | Features large, rounded corners, playful animations, and bold styling |
+| 🖼️ **Profile Pictures** | The installer automatically places your profile picture in the correct system location (because I had headaches for 2 hours trying to figure out where to put it) |
+
+<br>
+
+## 💡 Customization
+
+While the theme automatically generates colors based on your wallpaper, you can override them by manually editing the configuration file located at:
+`/usr/share/sddm/themes/sddm-material/theme.conf`
+
+**Available Configuration Keys:**
+```ini
+BackgroundColor="#122010"
+Background="backgrounds/wallpaper.jpg"
+AccentColor="#72BFA2"
+AccentColorHover="#A6D7C5"
+SurfaceColor="#141A1A"
+TextColor="#FFFFFF"
+```
+
+<br>
+
 ## 🧪 Testing
 
-To preview the theme without logging out, you can run the SDDM greeter in test mode.
+To preview the theme live on your desktop without logging out, you can run the SDDM greeter directly in test mode:
 
 ```bash
 sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/sddm-material
 ```
 
-## 🎨 Customization
-
-While the theme automatically generates colors based on your wallpaper, you can override them by manually editing the configuration file located at:
-
-`/usr/share/sddm/themes/sddm-material/theme.conf`
-
-**Available Settings:**
-*   `BackgroundColor`
-*   `Background` (Path to the wallpaper image)
-*   `AccentColor`
-*   `AccentColorHover`
-*   `SurfaceColor`
-*   `TextColor`
-
 <br>
 
+## 🤝 Credits
+
 **Special thanks to:**
-- Rajesh Rajput for the "Unique" font.
-- The Caelestia Project for design inspiration.
-- The KDE Project for SDDM.
+- **Rajesh Rajput** for the *Unique* font.
+- **The Caelestia Project** for design inspiration.
+- **The KDE Project** for SDDM.
