@@ -38,7 +38,7 @@ git clone https://github.com/blumenwagen/sddm-material.git
 
 cd sddm-material
 
-#Install the theme
+#Install the theme (if you run without arguments, it will ask you for a wallpaper and profile picture)
 sudo ./install.sh
 ```
 

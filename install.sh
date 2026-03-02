@@ -37,6 +37,27 @@ if [ ! -f "$WALLPAPER_PATH" ]; then
     exit 1
 fi
 
+# 1.5 Ask for profile picture
+if [ -n "$2" ]; then
+    PFP_PATH="$2"
+    echo "Using provided profile picture path: $PFP_PATH"
+else
+    read -p "Enter the absolute path to your profile picture (optional, press Enter to skip): " PFP_PATH
+fi
+
+if [ -n "$PFP_PATH" ] && [ -f "$PFP_PATH" ]; then
+    TARGET_USER="${SUDO_USER:-$USER}"
+    if [ "$TARGET_USER" == "root" ]; then
+        read -p "Enter the username this profile picture is for: " TARGET_USER
+    fi
+    echo "⏳ Installing profile picture for $TARGET_USER..."
+    mkdir -p "/usr/share/sddm/faces"
+    cp "$PFP_PATH" "/usr/share/sddm/faces/$TARGET_USER.face.icon"
+    chmod 644 "/usr/share/sddm/faces/$TARGET_USER.face.icon"
+elif [ -n "$PFP_PATH" ]; then
+    echo "⚠️ Warning: Profile picture file not found at $PFP_PATH. Skipping."
+fi
+
 # 2. Extract Colors
 echo "⏳ Extracting dynamic Material 3 colors from wallpaper..."
 # Ensure Python dependencies are available for root if run via sudo
