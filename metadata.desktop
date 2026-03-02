@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+Name=Material 3 Expressive
+Description=A playful, vibrant Material 3 inspired SDDM theme built with Qt6.
+Author=Antigravity
+Copyright=(c) 2026
+License=MIT
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=sddm-material
+Theme-API=2.0
