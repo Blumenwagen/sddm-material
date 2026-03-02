@@ -11,9 +11,26 @@ THEME_NAME="sddm-material"
 THEME_DIR="/usr/share/sddm/themes/$THEME_NAME"
 FONT_DIR="/usr/share/fonts/TTF"
 
+# Dependency check
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Error: python3 is not installed. Please install it to extract colors."
+    exit 1
+fi
+
+if ! python3 -c "import PIL" &> /dev/null; then
+    echo "❌ Error: python3-pillow is not installed. Please install it (e.g., sudo apt install python3-pillow or pip install Pillow) to extract colors."
+    exit 1
+fi
+
 # 1. Ask for wallpaper
 echo -e "\n🎨 Welcome to the SDDM Material Installation."
-read -p "Enter the absolute path to your chosen wallpaper image (e.g. /home/user/Pictures/wall.jpg): " WALLPAPER_PATH
+
+if [ -n "$1" ]; then
+    WALLPAPER_PATH="$1"
+    echo "Using provided wallpaper path: $WALLPAPER_PATH"
+else
+    read -p "Enter the absolute path to your chosen wallpaper image (e.g. /home/user/Pictures/wall.jpg): " WALLPAPER_PATH
+fi
 
 if [ ! -f "$WALLPAPER_PATH" ]; then
     echo "❌ Error: Wallpaper file not found at $WALLPAPER_PATH"
@@ -23,7 +40,11 @@ fi
 # 2. Extract Colors
 echo "⏳ Extracting dynamic Material 3 colors from wallpaper..."
 # Ensure Python dependencies are available for root if run via sudo
-sudo -u "$SUDO_USER" python3 update_theme_colors.py "$WALLPAPER_PATH"
+if [ -n "$SUDO_USER" ]; then
+    sudo -u "$SUDO_USER" python3 update_theme_colors.py "$WALLPAPER_PATH"
+else
+    python3 update_theme_colors.py "$WALLPAPER_PATH"
+fi
 
 if [ $? -ne 0 ]; then
     echo "❌ Error: Color extraction failed."
@@ -39,7 +60,22 @@ fc-cache -f "$FONT_DIR"
 # 4. Install Theme
 echo "⏳ Copying theme files to $THEME_DIR..."
 mkdir -p "$THEME_DIR"
-cp -r ./* "$THEME_DIR/"
+
+# Define the explicit list of files and directories to copy
+FILES_TO_COPY=(
+    "Main.qml"
+    "metadata.desktop"
+    "theme.conf"
+    "backgrounds"
+    "components"
+    "fonts"
+)
+
+for item in "${FILES_TO_COPY[@]}"; do
+    if [ -e "$item" ]; then
+        cp -r "$item" "$THEME_DIR/"
+    fi
+done
 
 # Make sure permissions are correct
 chmod -R 755 "$THEME_DIR"
@@ -51,6 +87,7 @@ mkdir -p "$SDDM_CONF_DIR"
 
 echo -e "[Theme]\nCurrent=$THEME_NAME" > "$SDDM_CONF_DIR/99-material.conf"
 
-echo "\n✅ Installation Complete!"
+echo -e "\n✅ Installation Complete!"
 echo "Your new Material 3 SDDM theme is active."
 echo "You can test it by running: sddm-greeter-qt6 --test-mode --theme $THEME_DIR"
+
