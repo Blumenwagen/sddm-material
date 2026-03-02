@@ -49,6 +49,13 @@ If you run without arguments, the script will automatically ask you for a **wall
 
 ## 💡 Customization
 
+### Changing your Wallpaper
+The easiest way to change your wallpaper (and update the colors to match!) is to simply run the installer script again with your new image:
+```bash
+sudo ./install.sh /path/to/my_new_wallpaper.jpg
+```
+
+### Manual Configuration
 While the theme automatically generates colors based on your wallpaper, you can override them by manually editing the configuration file located at:
 `/usr/share/sddm/themes/sddm-material/theme.conf`
 
