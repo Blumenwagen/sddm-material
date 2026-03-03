@@ -52,6 +52,7 @@ Item {
             color: root.textColor
             font.family: config.FontFamily || "sans-serif"
             font.pixelSize: 16
+            renderType: Text.NativeRendering
             
             echoMode: root.isPassword ? TextInput.Password : TextInput.Normal
             passwordCharacter: "•"
@@ -64,13 +65,14 @@ Item {
             Text {
                 id: capsLockWarning
                 anchors.right: parent.right
-                anchors.rightMargin: -60 // Position in the space we freed up
+                anchors.rightMargin: -65 // Position in the space we freed up
                 anchors.verticalCenter: parent.verticalCenter
                 text: "CAPS LOCK"
                 color: root.accentColor
                 font.family: textInput.font.family
-                font.pixelSize: 10
+                font.pixelSize: 11
                 font.bold: true
+                renderType: Text.NativeRendering
                 visible: typeof keyboard !== "undefined" && keyboard.capsLock && root.isPassword
             }
 
@@ -82,6 +84,7 @@ Item {
                 color: root.textColor // Match text color but lower opacity
                 font.family: textInput.font.family
                 font.pixelSize: textInput.font.pixelSize
+                renderType: Text.NativeRendering
                 visible: !textInput.text && !textInput.inputMethodComposing
                 opacity: 0.6
                 

@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import Qt5Compat.GraphicalEffects
+import QtGraphicalEffects 1.12
 import "components" as MyComponents
 
 Rectangle {
@@ -110,16 +110,18 @@ Rectangle {
         Text {
             text: root.isBatteryCharging ? "⚡" : "🔋"
             color: config.TextColor || "#2D3436"
-            font.pixelSize: 22
+            font.pixelSize: 24
+            renderType: Text.NativeRendering
             anchors.verticalCenter: parent.verticalCenter
         }
         
         Text {
             text: root.batteryPercent
             color: config.TextColor || "#2D3436"
-            font.pixelSize: 22
+            font.pixelSize: 24
             font.family: config.FontFamily || "sans-serif"
             font.bold: true
+            renderType: Text.NativeRendering
             anchors.verticalCenter: parent.verticalCenter
         }
     }
@@ -132,7 +134,7 @@ Rectangle {
         text: "⌨"
         hoverText: typeof textConstants !== "undefined" ? textConstants.layout : "Virtual Keyboard"
         isIcon: true
-        iconSize: 24
+        iconSize: 26
         backgroundColor: config.SurfaceColor || "#FFFFFF"
         textColor: config.TextColor || "#2D3436"
         z: 10
@@ -346,8 +348,9 @@ Rectangle {
                     id: dateLabel
                     text: Qt.formatDate(new Date(), "dddd, d MMMM")
                     font.family: config.FontFamily || "sans-serif"
-                    font.pixelSize: 28
+                    font.pixelSize: 32
                     font.weight: Font.DemiBold
+                    renderType: Text.NativeRendering
                     color: config.TextColor || "#2D3436"
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: separatorLine.bottom
@@ -385,15 +388,15 @@ Rectangle {
                 
                 property string avatarSource: (root.users && root.users.length > 0 && root.currentUserIndex >= 0 && root.currentUserIndex < root.users.length) ? (root.users[root.currentUserIndex].icon || "") : ""
                 
-                // Fallback Text Initial
                 Text {
                     id: avatarInitial
                     anchors.centerIn: parent
                     visible: parent.avatarSource === "" || avatarImageBase.status === Image.Error
                     text: (root.users && root.users.length > 0 && root.currentUserIndex >= 0 && root.currentUserIndex < root.users.length && root.users[root.currentUserIndex].name) ? root.users[root.currentUserIndex].name.charAt(0).toUpperCase() : "U"
                     color: config.TextColor || "#2D3436"
-                    font.pixelSize: 42
+                    font.pixelSize: 48
                     font.bold: true
+                    renderType: Text.NativeRendering
                 }
                 
                 // User Face Image
@@ -451,7 +454,7 @@ Rectangle {
                 MyComponents.InputTextField {
                     id: passwordField
                     // placeholderText is now handled by InputTextField internally via textConstants
-                    Layout.preferredWidth: 260
+                    Layout.preferredWidth: 280
                     Layout.alignment: Qt.AlignVCenter
                     
                     onAccepted: {
@@ -461,7 +464,6 @@ Rectangle {
                     Component.onCompleted: passwordField.textInput.forceActiveFocus()
                 }
                 
-                // Small Circle inline action for Submit
                 MyComponents.ActionButton {
                     id: loginButton
                     text: "➔" // Minimalist arrow
@@ -489,7 +491,7 @@ Rectangle {
                     text: "⏻"
                     hoverText: typeof textConstants !== "undefined" ? textConstants.powerOff : "Power"
                     isIcon: true
-                    iconSize: 22
+                    iconSize: 24
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
                     textColor: config.TextColor || "#2D3436"
                     onClicked: sddm.powerOff()
@@ -499,7 +501,7 @@ Rectangle {
                     text: "↻"
                     hoverText: typeof textConstants !== "undefined" ? textConstants.reboot : "Restart"
                     isIcon: true
-                    iconSize: 22
+                    iconSize: 24
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
                     textColor: config.TextColor || "#2D3436"
                     onClicked: sddm.reboot()
@@ -509,7 +511,7 @@ Rectangle {
                     text: "⏾"
                     hoverText: typeof textConstants !== "undefined" ? textConstants.suspend : "Sleep"
                     isIcon: true
-                    iconSize: 22
+                    iconSize: 24
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
                     textColor: config.TextColor || "#2D3436"
                     onClicked: sddm.suspend()
@@ -519,7 +521,7 @@ Rectangle {
                     text: "⫶"
                     hoverText: (root.sessions && root.sessions.length > 0 && root.currentSessionIndex >= 0 && root.currentSessionIndex < root.sessions.length) ? root.sessions[root.currentSessionIndex].name : (typeof textConstants !== "undefined" ? textConstants.session : "Session")
                     isIcon: true
-                    iconSize: 22
+                    iconSize: 24
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
                     textColor: config.TextColor || "#2D3436"
                     onClicked: {

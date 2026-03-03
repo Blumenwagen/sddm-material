@@ -55,31 +55,35 @@ Item {
                 font.family: config.FontFamily || "sans-serif"
                 font.pixelSize: 16
                 font.weight: Font.Medium
+                renderType: Text.QtRendering
             }
 
-            // Fixed perfect icon square
-            Text {
-                id: iconText
+            // Fixed perfect icon square container
+            Item {
+                id: iconContainer
                 visible: root.isIcon && root.text !== ""
-                text: root.text
-                color: root.textColor
-                font.family: "sans-serif"
-                font.pixelSize: root.iconSize
-                font.weight: Font.DemiBold
-                
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 width: 56
                 height: 56
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+
+                Text {
+                    id: iconText
+                    text: root.text
+                    color: root.textColor
+                    font.family: "sans-serif"
+                    font.pixelSize: root.iconSize
+                    font.weight: Font.DemiBold
+                    renderType: Text.QtRendering
+                    anchors.centerIn: parent
+                }
             }
 
             // Expanding text logic for icon pills
             Text {
                 id: hoverLabel
                 visible: root.isIcon && root.hoverText !== ""
-                anchors.left: iconText.right
+                anchors.left: iconContainer.right
                 anchors.leftMargin: -4
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.hoverText
@@ -87,6 +91,7 @@ Item {
                 font.family: config.FontFamily || "sans-serif"
                 font.pixelSize: 16
                 font.weight: Font.DemiBold
+                renderType: Text.NativeRendering
                 
                 opacity: mouseArea.containsMouse ? 1.0 : 0.0
                 Behavior on opacity {

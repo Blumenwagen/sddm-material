@@ -102,7 +102,6 @@ done
 chmod -R 755 "$THEME_DIR"
 
 # 5. Apply Theme to SDDM configuration
-# Note: Usually configured in /etc/sddm.conf or /etc/sddm.conf.d/
 SDDM_CONF_DIR="/etc/sddm.conf.d"
 mkdir -p "$SDDM_CONF_DIR"
 
@@ -110,5 +109,4 @@ echo -e "[Theme]\nCurrent=$THEME_NAME" > "$SDDM_CONF_DIR/99-material.conf"
 
 echo -e "\n✅ Installation Complete!"
 echo "Your new Material 3 SDDM theme is active."
-echo "You can test it by running: sddm-greeter-qt6 --test-mode --theme $THEME_DIR"
-
+echo "You can test it by running: sddm-greeter --test-mode --theme $THEME_DIR"
