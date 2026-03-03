@@ -11,14 +11,20 @@ THEME_NAME="sddm-material"
 THEME_DIR="/usr/share/sddm/themes/$THEME_NAME"
 FONT_DIR="/usr/share/fonts/TTF"
 
+VIDEO_EXTS="mp4 webm avi mkv"
+
+is_video() {
+    local ext="${1##*.}"
+    ext=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+    for v in $VIDEO_EXTS; do
+        [ "$ext" = "$v" ] && return 0
+    done
+    return 1
+}
+
 # Dependency check
 if ! command -v python3 &> /dev/null; then
     echo "❌ Error: python3 is not installed. Please install it to extract colors."
-    exit 1
-fi
-
-if ! python3 -c "import PIL" &> /dev/null; then
-    echo "❌ Error: python3-pillow is not installed. Please install it (e.g., sudo apt install python3-pillow or pip install Pillow) to extract colors."
     exit 1
 fi
 
@@ -27,14 +33,26 @@ echo -e "\n🎨 Welcome to the SDDM Material Installation."
 
 if [ -n "$1" ]; then
     WALLPAPER_PATH="$1"
-    echo "Using provided wallpaper path: $WALLPAPER_PATH"
+    echo "Using provided background path: $WALLPAPER_PATH"
 else
-    read -p "Enter the absolute path to your chosen wallpaper image (e.g. /home/user/Pictures/wall.jpg): " WALLPAPER_PATH
+    read -p "Enter the absolute path to your wallpaper image or video (e.g. /home/user/Pictures/wall.jpg or wall.mp4): " WALLPAPER_PATH
 fi
 
 if [ ! -f "$WALLPAPER_PATH" ]; then
-    echo "❌ Error: Wallpaper file not found at $WALLPAPER_PATH"
+    echo "❌ Error: File not found at $WALLPAPER_PATH"
     exit 1
+fi
+
+# Check Pillow for images, ffmpeg for videos
+if is_video "$WALLPAPER_PATH"; then
+    if ! command -v ffmpeg &> /dev/null; then
+        echo "⚠️  Warning: ffmpeg is not installed. Color extraction from video will be skipped."
+    fi
+else
+    if ! python3 -c "import PIL" &> /dev/null; then
+        echo "❌ Error: python3-pillow is not installed. Please install it (e.g., sudo apt install python3-pillow or pip install Pillow)."
+        exit 1
+    fi
 fi
 
 # 1.5 Ask for profile picture
@@ -58,8 +76,8 @@ elif [ -n "$PFP_PATH" ]; then
     echo "⚠️ Warning: Profile picture file not found at $PFP_PATH. Skipping."
 fi
 
-# 2. Extract Colors
-echo "⏳ Extracting dynamic Material 3 colors from wallpaper..."
+# 2. Extract Colors & Process Background
+echo "⏳ Processing background and extracting Material 3 colors..."
 # Ensure Python dependencies are available for root if run via sudo
 if [ -n "$SUDO_USER" ]; then
     sudo -u "$SUDO_USER" python3 update_theme_colors.py "$WALLPAPER_PATH"

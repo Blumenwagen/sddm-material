@@ -12,7 +12,16 @@ Rectangle {
     width: 1920
     height: 1080
     
-    // Background Image Layer
+    // Detect if background is a video file
+    property bool isVideo: {
+        var bg = (config.Background || "").toString().toLowerCase();
+        return bg.endsWith(".mp4") || bg.endsWith(".webm") || bg.endsWith(".avi") || bg.endsWith(".mkv");
+    }
+    
+    // Track whether video background loaded successfully
+    property bool videoFailed: false
+    
+    // Background Image Layer (also used as fallback if video loading fails)
     Image {
         id: bgImage
         anchors.fill: parent
@@ -20,11 +29,39 @@ Rectangle {
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
+        visible: !root.isVideo || root.videoFailed
         
         // Subtle Material 3 fade-in
         opacity: status === Image.Ready ? 1.0 : 0.0
         Behavior on opacity {
             NumberAnimation { duration: 1000; easing.type: Easing.OutCubic }
+        }
+    }
+    
+    // Background Video Layer (created dynamically to avoid crash if QtMultimedia is missing)
+    Item {
+        id: bgVideoContainer
+        anchors.fill: parent
+        visible: root.isVideo && !root.videoFailed
+        
+        Component.onCompleted: {
+            if (!root.isVideo) return;
+            try {
+                var videoQml =
+                    'import QtQuick 2.15; import QtMultimedia 5.15; ' +
+                    'Video { ' +
+                    '    anchors.fill: parent; ' +
+                    '    source: "' + (config.Background || "") + '"; ' +
+                    '    fillMode: VideoOutput.PreserveAspectCrop; ' +
+                    '    loops: MediaPlayer.Infinite; ' +
+                    '    muted: true; ' +
+                    '    Component.onCompleted: play(); ' +
+                    '}';
+                Qt.createQmlObject(videoQml, bgVideoContainer, "VideoBackground");
+            } catch(e) {
+                console.log("Video background unavailable: " + e);
+                root.videoFailed = true;
+            }
         }
     }
     
@@ -62,6 +99,7 @@ Rectangle {
     property string batteryPercent: ""
     property bool isBatteryCharging: false
     property bool hasBattery: false
+    
 
     Timer {
         interval: 10000 // every 10 seconds
@@ -269,24 +307,13 @@ Rectangle {
                 font.weight: Font.Bold
                 font.letterSpacing: -12
                 font.hintingPreference: Font.PreferFullHinting
-                renderType: Text.QtRendering
-                antialiasing: true
-                smooth: true
+                renderType: Text.NativeRendering
                 color: config.TextColor || "#2D3436"
                 anchors.horizontalCenter: parent.horizontalCenter
-                rotation: -4
+                anchors.horizontalCenterOffset: -20
                 
-                scale: 0.6
                 opacity: 0
-                Component.onCompleted: { scaleAnim.start(); opacityAnim.start(); }
-                SpringAnimation on scale { id: scaleAnim; to: 1.0; spring: 4.0; damping: 0.35 }
-                NumberAnimation on opacity { id: opacityAnim; to: 1.0; duration: 800; easing.type: Easing.OutCubic }
-                
-                SequentialAnimation on rotation {
-                    loops: Animation.Infinite
-                    NumberAnimation { to: -1; duration: 3000; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: -4; duration: 3000; easing.type: Easing.InOutSine }
-                }
+                NumberAnimation on opacity { to: 1.0; duration: 800; easing.type: Easing.OutCubic }
             }
             
             Text {
@@ -297,24 +324,13 @@ Rectangle {
                 font.weight: Font.Bold
                 font.letterSpacing: -12
                 font.hintingPreference: Font.PreferFullHinting
-                renderType: Text.QtRendering
-                antialiasing: true
-                smooth: true
+                renderType: Text.NativeRendering
                 color: config.AccentColor || "#FF6B6B"
                 anchors.horizontalCenter: parent.horizontalCenter
-                rotation: 3
+                anchors.horizontalCenterOffset: 20
                 
-                scale: 0.6
                 opacity: 0
-                Component.onCompleted: { minScaleAnim.start(); minOpacityAnim.start(); }
-                SpringAnimation on scale { id: minScaleAnim; to: 1.0; spring: 3.5; damping: 0.4 }
-                NumberAnimation on opacity { id: minOpacityAnim; to: 1.0; duration: 1000; easing.type: Easing.OutCubic }
-                
-                SequentialAnimation on rotation {
-                    loops: Animation.Infinite
-                    NumberAnimation { to: 6; duration: 4000; easing.type: Easing.InOutSine }
-                    NumberAnimation { to: 3; duration: 4000; easing.type: Easing.InOutSine }
-                }
+                NumberAnimation on opacity { to: 1.0; duration: 1000; easing.type: Easing.OutCubic }
             }
             
             // Container to decouple Canvas and Date from the column's heavy -110 spacing
@@ -446,6 +462,7 @@ Rectangle {
                 }
             }
             
+
             // Password Field & Side Login Circle Button
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
@@ -481,6 +498,7 @@ Rectangle {
                 }
             }
             
+
             // System Action Buttons vertically structured under Login
             Row {
                 Layout.alignment: Qt.AlignHCenter

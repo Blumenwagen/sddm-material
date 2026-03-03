@@ -28,12 +28,15 @@ cd sddm-material
 sudo ./install.sh
 ```
 
-Requires **SDDM**, **Qt5**, and **python3** with **pillow** (for color extraction). 
-If you run without arguments, the script will automatically ask you for a **wallpaper** and an optional **profile picture**.
+Requires **SDDM**, **Qt5**, **python3** with **pillow** (for image color extraction), and optionally **ffmpeg** & **qt5-multimedia** (for video backgrounds).
+If you run without arguments, the script will automatically ask you for a **wallpaper** (image or video) and an optional **profile picture**.
 
 > [!NOTE]
-> You can also run the installer non-interactively by passing the image paths directly: 
+> You can also run the installer non-interactively by passing the paths directly: 
 > `sudo ./install.sh /path/to/my_wallpaper.jpg /path/to/my_pfp.png`
+> 
+> Video backgrounds work the same way:
+> `sudo ./install.sh /path/to/my_video.mp4`
 
 ### Manual Installation
 
@@ -76,6 +79,7 @@ In case the installation script does not work, you can manually install the them
 |---------|-------------|
 | 🎨 **Dynamic Colors** | Automatically extracts dominant colors from your chosen wallpaper and generates a fitting color palette |
 | ✨ **Looks Good** | Features large, rounded corners, playful animations, and bold styling |
+| 🎬 **Video Backgrounds** | Supports MP4, WebM, AVI, and MKV video files as looping backgrounds |
 | 🖼️ **Profile Pictures** | The installer automatically places your profile picture in the correct system location (because I had headaches for 2 hours trying to figure out where to put it) |
 
 <br>
@@ -95,12 +99,15 @@ While the theme automatically generates colors based on your wallpaper, you can 
 **Available Configuration Keys:**
 ```ini
 BackgroundColor="#122010"
-Background="backgrounds/wallpaper.jpg"
+Background="backgrounds/wallpaper.jpg"    # or wallpaper.mp4 for video backgrounds
 AccentColor="#72BFA2"
 AccentColorHover="#A6D7C5"
 SurfaceColor="#141A1A"
 TextColor="#FFFFFF"
 ```
+
+> [!NOTE]
+> Video backgrounds (`.mp4`, `.webm`, `.avi`, `.mkv`) are automatically detected and will loop silently. Make sure `qt5-multimedia` and a GStreamer backend are installed on your system.
 
 <br>
 
