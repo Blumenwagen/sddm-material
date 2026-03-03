@@ -65,7 +65,7 @@ In case the installation script does not work, you can manually install the them
    ```bash
    sudo nano /etc/sddm.conf # Add or edit the following lines:
    [Theme]
-Current=sddm-material
+   Current=sddm-material
    ```
 
 <br>
