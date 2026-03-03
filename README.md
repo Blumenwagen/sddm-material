@@ -1,8 +1,8 @@
 <div align="center">
   
-  <h1>✨ SDDM Material 3</h1>
-  <p><b>A playful, vibrant Material 3 expressive inspired SDDM theme</b></p>
-  <p><i>Dynamic Colors • Qt6 Native • Custom Typography • Beautiful Animations</i></p>
+  <h1>✨ SDDM Material</h1>
+  <p><b>A playful, vibrant Material Design inspired SDDM theme</b></p>
+  <p><i>Dynamic Colors • Qt6 • Beautiful Animations</i></p>
 
   <p>
     <a href="https://github.com/blumenwagen/sddm-material/blob/main/LICENSE"><img src="https://img.shields.io/github/license/blumenwagen/sddm-material?style=for-the-badge&color=blue" alt="License"></a>
@@ -41,7 +41,7 @@ If you run without arguments, the script will automatically ask you for a **wall
 
 | Feature | Description |
 |---------|-------------|
-| 🎨 **Dynamic Colors** | Automatically extracts dominant colors from your chosen wallpaper and generates a Material You-like palette |
+| 🎨 **Dynamic Colors** | Automatically extracts dominant colors from your chosen wallpaper and generates a fitting color palette |
 | ✨ **Looks Good** | Features large, rounded corners, playful animations, and bold styling |
 | 🖼️ **Profile Pictures** | The installer automatically places your profile picture in the correct system location (because I had headaches for 2 hours trying to figure out where to put it) |
 

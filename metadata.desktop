@@ -1,7 +1,7 @@
 [SddmGreeterTheme]
-Name=Material 3 Expressive
-Description=A playful, vibrant Material 3 inspired SDDM theme built with Qt6.
-Author=Antigravity
+Name=Material SDDM
+Description=A playful, vibrant Material inspired SDDM theme built with Qt6.
+Author=Blumenwagen
 Copyright=(c) 2026
 License=BSD 3-Clause
 Type=sddm-theme
