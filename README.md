@@ -14,7 +14,7 @@
 <br>
 
 <p align="center">
-  <img src="swappy-20260302_220743.png" alt="SDDM Material Theme Preview" width="100%" onerror="this.style.display='none';"> 
+  <img src="showcase.png" alt="SDDM Material Theme Preview" width="100%" onerror="this.style.display='none';"> 
 </p>
 
 
