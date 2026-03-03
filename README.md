@@ -2,11 +2,11 @@
   
   <h1>✨ SDDM Material</h1>
   <p><b>A playful, vibrant Material Design inspired SDDM theme</b></p>
-  <p><i>Dynamic Colors • Qt6 • Beautiful Animations</i></p>
+  <p><i>Dynamic Colors • Beautiful Animations</i></p>
 
   <p>
     <a href="https://github.com/blumenwagen/sddm-material/blob/main/LICENSE"><img src="https://img.shields.io/github/license/blumenwagen/sddm-material?style=for-the-badge&color=blue" alt="License"></a>
-    <img src="https://img.shields.io/badge/Qt-6.0%2B-41CD52.svg?style=for-the-badge&logo=qt" alt="Qt6">
+    <img src="https://img.shields.io/badge/Qt-5.15%2B-41CD52.svg?style=for-the-badge&logo=qt" alt="Qt5">
     <img src="https://img.shields.io/badge/Material%20Design%203-Expressive-72BFA2.svg?style=for-the-badge" alt="Material Design 3">
   </p>
 </div>
@@ -28,12 +28,45 @@ cd sddm-material
 sudo ./install.sh
 ```
 
-Requires **SDDM**, **Qt6**, and **python3** with **pillow** (for color extraction). 
+Requires **SDDM**, **Qt5**, and **python3** with **pillow** (for color extraction). 
 If you run without arguments, the script will automatically ask you for a **wallpaper** and an optional **profile picture**.
 
 > [!NOTE]
 > You can also run the installer non-interactively by passing the image paths directly: 
 > `sudo ./install.sh /path/to/my_wallpaper.jpg /path/to/my_pfp.png`
+
+### Manual Installation
+
+In case the installation script does not work, you can manually install the theme by following these steps:
+
+1. **Extract Colors (Optional but recommended):**
+   ```bash
+   python3 update_theme_colors.py /path/to/your/wallpaper.jpg
+   ```
+
+2. **Install Fonts:**
+   Copy the fonts to your system fonts directory and update the font cache:
+   ```bash
+   sudo mkdir -p /usr/share/fonts/TTF
+   sudo cp -r fonts/Unique_*.otf /usr/share/fonts/TTF/
+   sudo fc-cache -f /usr/share/fonts/TTF
+   ```
+
+3. **Install Theme Files:**
+   Create the theme directory and copy the necessary files:
+   ```bash
+   sudo mkdir -p /usr/share/sddm/themes/sddm-material
+   sudo cp -r Main.qml metadata.desktop theme.conf backgrounds components fonts /usr/share/sddm/themes/sddm-material/
+   sudo chmod -R 755 /usr/share/sddm/themes/sddm-material
+   ```
+
+4. **Apply Theme:**
+   Configure SDDM to use the new theme:
+   ```bash
+   sudo nano /etc/sddm.conf # Add or edit the following lines:
+   [Theme]
+Current=sddm-material
+   ```
 
 <br>
 
@@ -76,7 +109,7 @@ TextColor="#FFFFFF"
 To preview the theme live on your desktop without logging out, you can run the SDDM greeter directly in test mode:
 
 ```bash
-sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/sddm-material
+sddm-greeter --test-mode --theme /usr/share/sddm/themes/sddm-material
 ```
 
 <br>
