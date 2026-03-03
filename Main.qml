@@ -38,6 +38,116 @@ Rectangle {
             currentUserIndex = 0;
         }
     }
+
+    Connections {
+        target: sddm
+        function onLoginFailed() {
+            passwordField.text = ""
+            passwordField.textInput.forceActiveFocus()
+            shakeAnim.start()
+        }
+    }
+
+    SequentialAnimation {
+        id: shakeAnim
+        // Animate the transform instead of x to avoid breaking layout anchors
+        NumberAnimation { target: loginTranslate; property: "x"; from: 0; to: 10; duration: 50 }
+        NumberAnimation { target: loginTranslate; property: "x"; from: 10; to: -10; duration: 50 }
+        NumberAnimation { target: loginTranslate; property: "x"; from: -10; to: 10; duration: 50 }
+        NumberAnimation { target: loginTranslate; property: "x"; from: 10; to: -10; duration: 50 }
+        NumberAnimation { target: loginTranslate; property: "x"; from: -10; to: 0; duration: 50 }
+    }
+    
+    // --- Battery Info ---
+    property string batteryPercent: ""
+    property bool isBatteryCharging: false
+    property bool hasBattery: false
+
+    Timer {
+        interval: 10000 // every 10 seconds
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            var req = new XMLHttpRequest();
+            req.onreadystatechange = function() {
+                if (req.readyState === XMLHttpRequest.DONE) {
+                    if (req.status === 200 || req.status === 0) {
+                        var val = parseInt(req.responseText.trim());
+                        if (!isNaN(val)) {
+                            root.batteryPercent = val + "%";
+                            root.hasBattery = true;
+                        }
+                    }
+                }
+            }
+            req.open("GET", "file:///sys/class/power_supply/BAT0/capacity");
+            req.send();
+
+            var reqStatus = new XMLHttpRequest();
+            reqStatus.onreadystatechange = function() {
+                if (reqStatus.readyState === XMLHttpRequest.DONE) {
+                    if (reqStatus.status === 200 || reqStatus.status === 0) {
+                        var statusStr = reqStatus.responseText.trim();
+                        root.isBatteryCharging = (statusStr === "Charging" || statusStr === "Full" || statusStr === "Not charging");
+                    }
+                }
+            }
+            reqStatus.open("GET", "file:///sys/class/power_supply/BAT0/status");
+            reqStatus.send();
+        }
+    }
+
+    // --- Top Right Area (Battery) ---
+    Row {
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: 48
+        spacing: 8
+        visible: root.hasBattery
+        z: 10
+        
+        Text {
+            text: root.isBatteryCharging ? "⚡" : "🔋"
+            color: config.TextColor || "#2D3436"
+            font.pixelSize: 22
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        
+        Text {
+            text: root.batteryPercent
+            color: config.TextColor || "#2D3436"
+            font.pixelSize: 22
+            font.family: config.FontFamily || "sans-serif"
+            font.bold: true
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+
+    // --- Bottom Right Area (Virtual Keyboard) ---
+    MyComponents.ActionButton {
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 48
+        text: "⌨"
+        hoverText: typeof textConstants !== "undefined" ? textConstants.layout : "Virtual Keyboard"
+        isIcon: true
+        iconSize: 24
+        backgroundColor: config.SurfaceColor || "#FFFFFF"
+        textColor: config.TextColor || "#2D3436"
+        z: 10
+        onClicked: {
+            if (typeof Qt.inputMethod !== "undefined") {
+                if (Qt.inputMethod.visible) {
+                    Qt.inputMethod.hide();
+                } else {
+                    Qt.inputMethod.show();
+                }
+            }
+        }
+    }
+    
+
     
     // --- Model Data Extraction via Item Views ---
     // SDDM's ListModels only reliably expose their named roles (name, icon, etc) 
@@ -72,6 +182,7 @@ Rectangle {
     
     // --- Clock & Abstract Canvas ---
     Timer {
+        id: clockTimer
         interval: 1000
         running: true
         repeat: true
@@ -79,6 +190,7 @@ Rectangle {
             var currentTime = new Date()
             hourLabel.text = Qt.formatTime(currentTime, "hh")
             minuteLabel.text = Qt.formatTime(currentTime, "mm")
+            dateLabel.text = Qt.formatDate(currentTime, "dddd, d MMMM")
         }
     }
     
@@ -203,24 +315,44 @@ Rectangle {
                 }
             }
             
-            // The drawn squiggly line from the sketch serving as a dynamic divider
-            Canvas {
-                width: 240
-                height: 30
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.topMargin: 30
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.strokeStyle = config.TextColor || "#2D3436";
-                    ctx.lineWidth = 4;
-                    ctx.lineCap = "round";
-                    ctx.beginPath();
-                    ctx.moveTo(10, 15);
-                    // A simple hand-drawn-style sine wave
-                    for (var i = 10; i < width - 10; i+=2) {
-                        ctx.lineTo(i, 15 + Math.sin(i * 0.12) * 6);
+            // Container to decouple Canvas and Date from the column's heavy -110 spacing
+            Item {
+                width: parent.width
+                height: 140 // Counteract the negative spacing so it sits naturally
+                
+                Canvas {
+                    id: separatorLine
+                    width: 240
+                    height: 30
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: 60 // Push it cleanly below the minutes
+                    
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.strokeStyle = config.TextColor || "#2D3436";
+                        ctx.lineWidth = 4;
+                        ctx.lineCap = "round";
+                        ctx.beginPath();
+                        ctx.moveTo(10, 15);
+                        for (var i = 10; i < width - 10; i+=2) {
+                            ctx.lineTo(i, 15 + Math.sin(i * 0.12) * 6);
+                        }
+                        ctx.stroke();
                     }
-                    ctx.stroke();
+                }
+                
+                Text {
+                    id: dateLabel
+                    text: Qt.formatDate(new Date(), "dddd, d MMMM")
+                    font.family: config.FontFamily || "sans-serif"
+                    font.pixelSize: 28
+                    font.weight: Font.DemiBold
+                    color: config.TextColor || "#2D3436"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: separatorLine.bottom
+                    anchors.topMargin: 16
+                    opacity: 0.8
                 }
             }
         }
@@ -238,6 +370,7 @@ Rectangle {
             id: loginLayout
             anchors.fill: parent
             spacing: 28
+            transform: Translate { id: loginTranslate }
             
             // Central Avatar Above Inputs exactly as placed in Sketch
             Rectangle {
@@ -291,6 +424,23 @@ Rectangle {
                         }
                     }
                 }
+                
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        root.currentUserIndex = (root.currentUserIndex + 1) % userModel.count
+                    }
+                    cursorShape: Qt.PointingHandCursor
+                    
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: parent.width / 2
+                        color: "#000000"
+                        opacity: parent.containsMouse ? 0.1 : 0.0
+                        Behavior on opacity { NumberAnimation { duration: 150 } }
+                    }
+                    hoverEnabled: true
+                }
             }
             
             // Password Field & Side Login Circle Button
@@ -300,7 +450,7 @@ Rectangle {
                 
                 MyComponents.InputTextField {
                     id: passwordField
-                    placeholderText: "Password"
+                    // placeholderText is now handled by InputTextField internally via textConstants
                     Layout.preferredWidth: 260
                     Layout.alignment: Qt.AlignVCenter
                     
@@ -337,7 +487,7 @@ Rectangle {
                 
                 MyComponents.ActionButton {
                     text: "⏻"
-                    hoverText: "Power"
+                    hoverText: typeof textConstants !== "undefined" ? textConstants.powerOff : "Power"
                     isIcon: true
                     iconSize: 22
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
@@ -347,7 +497,7 @@ Rectangle {
                 
                 MyComponents.ActionButton {
                     text: "↻"
-                    hoverText: "Restart"
+                    hoverText: typeof textConstants !== "undefined" ? textConstants.reboot : "Restart"
                     isIcon: true
                     iconSize: 22
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
@@ -357,7 +507,7 @@ Rectangle {
                 
                 MyComponents.ActionButton {
                     text: "⏾"
-                    hoverText: "Sleep"
+                    hoverText: typeof textConstants !== "undefined" ? textConstants.suspend : "Sleep"
                     isIcon: true
                     iconSize: 22
                     backgroundColor: config.SurfaceColor || "#FFFFFF"
@@ -367,7 +517,7 @@ Rectangle {
                 
                 MyComponents.ActionButton {
                     text: "⫶"
-                    hoverText: (root.sessions && root.sessions.length > 0 && root.currentSessionIndex >= 0 && root.currentSessionIndex < root.sessions.length) ? root.sessions[root.currentSessionIndex].name : "Session"
+                    hoverText: (root.sessions && root.sessions.length > 0 && root.currentSessionIndex >= 0 && root.currentSessionIndex < root.sessions.length) ? root.sessions[root.currentSessionIndex].name : (typeof textConstants !== "undefined" ? textConstants.session : "Session")
                     isIcon: true
                     iconSize: 22
                     backgroundColor: config.SurfaceColor || "#FFFFFF"

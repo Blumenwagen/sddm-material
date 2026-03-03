@@ -6,7 +6,7 @@ Item {
 
     property alias textInput: textInput
     property alias text: textInput.text
-    property string placeholderText: "Password"
+    property string placeholderText: typeof textConstants !== "undefined" ? textConstants.password : "Password"
     property bool isPassword: true
     property color surfaceColor: config.SurfaceColor || "#FFFFFF"
     property color textColor: config.TextColor || "#2D3436"
@@ -46,7 +46,7 @@ Item {
             id: textInput
             anchors.fill: parent
             anchors.leftMargin: 20
-            anchors.rightMargin: 20
+            anchors.rightMargin: 80 // Extra margin to make room for caps lock indicator
             verticalAlignment: TextInput.AlignVCenter
             
             color: root.textColor
@@ -59,6 +59,20 @@ Item {
             clip: true
             
             onAccepted: root.accepted()
+
+            // Caps Lock Warning Indicator
+            Text {
+                id: capsLockWarning
+                anchors.right: parent.right
+                anchors.rightMargin: -60 // Position in the space we freed up
+                anchors.verticalCenter: parent.verticalCenter
+                text: "CAPS LOCK"
+                color: root.accentColor
+                font.family: textInput.font.family
+                font.pixelSize: 10
+                font.bold: true
+                visible: typeof keyboard !== "undefined" && keyboard.capsLock && root.isPassword
+            }
 
             Text {
                 id: placeholder
